@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-navy-900 bg-[#F7F8FA] antialiased;
+  }
+}
+
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  .fade-in-1 {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.05s forwards;
+  }
+  .fade-in-2 {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.1s forwards;
+  }
+  .fade-in-3 {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.15s forwards;
+  }
+  .fade-in-4 {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.2s forwards;
+  }
+  .fade-in-5 {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.25s forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
