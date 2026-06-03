@@ -66,75 +66,55 @@ async function readFileAsBase64(file) {
 }
 
 export async function extractDocumentFields(files) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  const contentBlocks = []
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  const parts = []
 
-  contentBlocks.push({
-    type: 'text',
-    text: 'Please analyze the following trade documents and extract all fields:',
-  })
+  parts.push({ text: 'Please analyze the following trade documents and extract all fields:' })
 
   for (const file of files) {
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
 
-    contentBlocks.push({
-      type: 'text',
-      text: `\n--- Document: ${file.name} ---`,
-    })
+    parts.push({ text: `\n--- Document: ${file.name} ---` })
 
     if (isPdf) {
       try {
         const base64 = await readFileAsBase64(file)
-        contentBlocks.push({
-          type: 'document',
-          source: {
-            type: 'base64',
-            media_type: 'application/pdf',
-            data: base64,
-          },
-        })
+        parts.push({ inline_data: { mime_type: 'application/pdf', data: base64 } })
       } catch {
-        contentBlocks.push({
-          type: 'text',
-          text: '[PDF file - could not read binary content]',
-        })
+        parts.push({ text: '[PDF file - could not read binary content]' })
       }
     } else {
       try {
         const text = await readFileAsText(file)
-        contentBlocks.push({ type: 'text', text })
+        parts.push({ text })
       } catch {
-        contentBlocks.push({
-          type: 'text',
-          text: '[Could not read file content]',
-        })
+        parts.push({ text: '[Could not read file content]' })
       }
     }
   }
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: 'user', parts }],
+        generationConfig: { temperature: 0, maxOutputTokens: 2048 },
+      }),
     },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: contentBlocks }],
-    }),
-  })
+  )
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}))
-    throw new Error(err.error?.message || `API error ${response.status}`)
+    throw new Error(err.error?.message || `Gemini API error ${response.status}`)
   }
 
   const data = await response.json()
-  const raw = data.content[0].text.trim()
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+
+  if (!raw) throw new Error('Empty response from Gemini')
 
   try {
     return JSON.parse(raw)
