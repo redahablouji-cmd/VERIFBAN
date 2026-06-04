@@ -23,7 +23,7 @@ function ResultRow({ result }) {
   return (
     <div
       className={`px-5 py-4 flex items-start justify-between gap-4 ${
-        isFail ? 'border-l-2 border-red-500 bg-red-50' : isWarn ? 'bg-amber-50/40' : ''
+        isFail ? 'border-l-2 border-red-500 bg-red-50' : isWarn ? 'border-l-2 border-amber-400 bg-amber-50/40' : ''
       }`}
     >
       <div className="flex-1 min-w-0">

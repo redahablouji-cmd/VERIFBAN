@@ -131,7 +131,12 @@ export function runVerificationRules(extracted) {
     let status, note
     if (invDate && expiry) {
       status = invDate <= expiry ? 'pass' : 'fail'
-      note = status === 'pass' ? 'Invoice date is within L/C validity' : 'Invoice date is after L/C expiry'
+      if (status === 'fail') {
+        const diffDays = Math.round((invDate.getTime() - expiry.getTime()) / 86400000)
+        note = `Invoice dated ${diffDays} day${diffDays !== 1 ? 's' : ''} after L/C expiry`
+      } else {
+        note = 'Invoice date is within L/C validity'
+      }
     } else {
       status = 'warning'
       note = 'Invoice date or L/C expiry not available'

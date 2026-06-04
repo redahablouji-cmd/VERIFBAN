@@ -2,7 +2,7 @@ export default function SetupRequired() {
   const missing = []
   if (!import.meta.env.VITE_SUPABASE_URL) missing.push('VITE_SUPABASE_URL')
   if (!import.meta.env.VITE_SUPABASE_ANON_KEY) missing.push('VITE_SUPABASE_ANON_KEY')
-  if (!import.meta.env.VITE_GEMINI_API_KEY) missing.push('VITE_GEMINI_API_KEY')
+  if (!import.meta.env.VITE_ANTHROPIC_API_KEY) missing.push('VITE_ANTHROPIC_API_KEY')
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] flex items-center justify-center p-6">
@@ -48,7 +48,7 @@ export default function SetupRequired() {
           </p>
 
           <div className="space-y-2 mb-7">
-            {['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'VITE_GEMINI_API_KEY'].map((key) => {
+            {['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'VITE_ANTHROPIC_API_KEY'].map((key) => {
               const isMissing = missing.includes(key)
               return (
                 <div
@@ -82,7 +82,7 @@ export default function SetupRequired() {
           <div className="bg-[#F7F8FA] border border-[#E2E6EA] rounded p-4 text-xs text-gray-500 space-y-1.5">
             <p className="font-semibold text-navy-700 mb-2">How to fix:</p>
             <p>1. Go to your <strong>Vercel project → Settings → Environment Variables</strong></p>
-            <p>2. Add each missing variable with the values from your Supabase and Google AI Studio dashboards</p>
+            <p>2. Add each missing variable with the values from your Supabase and Supabase and Anthropic (console.anthropic.com) dashboards</p>
             <p>3. Redeploy (Vercel → Deployments → Redeploy)</p>
           </div>
         </div>
